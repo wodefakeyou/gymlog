@@ -88,7 +88,7 @@ class NutritionCalculator {
   }
 
   // ── Human-readable labels ────────────────────────────────
-  static const Map<double, String> activityLabels = {
+  static final Map<double, String> activityLabels = {
     1.2:   '久坐（几乎不运动）',
     1.375: '轻度活动（每周 1-3 次）',
     1.55:  '中度活动（每周 3-5 次）',
@@ -96,13 +96,13 @@ class NutritionCalculator {
     1.9:   '极高活动（两练或体力劳动）',
   };
 
-  static const Map<String, String> goalLabels = {
+  static final Map<String, String> goalLabels = {
     'recomp': '增肌减脂同步',
     'bulk':   '增肌为主（热量盈余）',
     'cut':    '减脂为主（热量赤字）',
   };
 
-  static const Map<String, String> goalDescriptions = {
+  static final Map<String, String> goalDescriptions = {
     'recomp':
       '同步增肌减脂适合初级训练者与体脂中等的中级训练者。'
       '轻微热量赤字（-150 kcal）配合高蛋白饮食，让身体优先燃脂、同时保留肌肉。'
