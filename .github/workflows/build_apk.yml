@@ -1,25 +1,48 @@
 name: Build Android APK
+
 on:
   push:
     branches: [main, master]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.2'
           channel: 'stable'
           cache: true
+
+      - name: Create app icons
+        run: |
+          python3 -c "
+          import struct, zlib, os
+          def png(w,h,c):
+            r,g,b=c
+            raw=b''.join(b'\x00'+bytes([r,g,b]*w) for _ in range(h))
+            def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
+            return b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          for d,s in [('mdpi',48),('hdpi',72),('xhdpi',96),('xxhdpi',144),('xxxhdpi',192)]:
+            p=f'android/app/src/main/res/mipmap-{d}'; os.makedirs(p,exist_ok=True)
+            open(f'{p}/ic_launcher.png','wb').write(png(s,s,(108,99,255)))
+          print('Icons created')
+          "
+
       - run: flutter pub get
+
       - run: flutter analyze --no-fatal-infos
+
       - run: flutter build apk --debug
+
       - uses: actions/upload-artifact@v4
         with:
           name: GymLog-APK
